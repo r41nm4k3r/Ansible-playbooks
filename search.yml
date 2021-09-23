@@ -1,0 +1,29 @@
+---
+ - name: Find files - Playbook
+   hosts: rhel
+   gather_facts: True
+   tasks:
+
+   # Case1:  when Search String and Modified time is mentioned
+   - name:  Find command with *SEARCH STRING* and *MODIFIED TIME*
+     shell: "find {{Directory}} -name '{{SearchString}}'"
+     register: case1output
+     when: Directory is defined and SearchString is defined and mtime is defined
+     ignore_errors: true
+
+   # Case2: when Only Search String is mentioend but NOT Modified time(age)
+   - name:  Find command with only with *SEARCH STRING*
+     shell: "find {{Directory}} -name '{{SearchString}}' "
+     register: case2output
+     when: Directory is defined and SearchString is defined and mtime is not defined
+     ignore_errors: true
+
+   # In case of Case1 Success
+   - name: Case1 Output -- Output will be displayed only if Case is Success (or) it will be skipped
+     debug: var=case1output.stdout_lines
+     when: case1output.stdout_lines is defined
+
+   # In case of Case2 Success
+   - name: Case2 Output -- Output will be displayed only if Case is Success (or) it will be skipped
+     debug: var=case2output.stdout_lines
+     when: case2output.stdout_lines is defined

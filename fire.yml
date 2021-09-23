@@ -1,0 +1,26 @@
+---
+ - name: FirewallD
+   hosts: all
+   become: yes
+   become_user: root
+   tasks:
+    - name: install firewalld
+      dnf:
+        name: firewalld
+        state: latest 
+    - name: Start firewalld
+      service:
+        name: firewalld
+        enabled: yes 
+        state: started
+    - name: Firewalld rules
+      firewalld:
+        zone: public
+        permanent: yes
+        immediate: yes
+        service: "{{ item }}"
+        state: enabled
+      with_items:
+        - http
+        - https
+        - ntp

@@ -1,0 +1,23 @@
+- name: Yum install rhel lab services needed
+  hosts: rhel
+  become: yes
+  tasks:
+    - name: Ansible yum to install multiple packages
+      ansible.builtin.yum:
+        name:
+          - samba
+          - httpd
+          - mariadb-server
+        state: present
+
+    - name: start multiple services in a loop
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      become: true
+      loop:
+        - httpd
+        - mariadb
+        - smb
+  

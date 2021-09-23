@@ -1,0 +1,62 @@
+---
+- name: Change context on web directory
+  hosts: rhel
+  become: Yes
+  vars:
+    green: "\e[0m\e[38;5;82m"
+    yellow: "\e[0m\e[38;5;11m"
+    bright_purple: "\e[0m\e[38;5;105m"
+    cyan: "\e[0m\e[38;5;51m"
+    green_bg_black_fg: "\e[0m\e[48;5;40m\e[38;5;232m"
+    yellow_bg_black_fg: "\e[0m\e[48;5;226m\e[38;5;232m"
+    purple_bg_white_fg: "\e[0m\e[48;5;57m\e[38;5;255m"
+    cyan_bg_black_fg: "\e[0m\e[48;5;87m\e[38;5;232m"
+    magenta: "\e[38;5;198m"
+    white: "\e[0m\e[38;5;255m"
+   #ansible_callback_diy_playbook_on_play_start_msg: "\n{{green}}DIY output(via play vars): play example: {{magenta}}{{ansible_callback_diy.play.name}}\n\n"
+   #ansible_callback_diy_playbook_on_task_start_msg: "DIY output(via play vars): task example: {{ ansible_callback_diy.task.name }}"
+   #ansible_callback_diy_playbook_on_task_start_msg_color: cyan
+    ansible_callback_diy_playbook_on_stats_msg: |+2
+              RESULTS
+      ==============================
+      {% for key in ansible_callback_diy.stats | sort %}
+      {% if ansible_callback_diy.stats[key] %}
+      {% if key == 'ok' %}
+      {% set color_one = lookup('vars','green_bg_black_fg') %}
+      {% set prefix = '      ' %}
+      {% set suffix = '     ' %}
+      {% set color_two = lookup('vars','green') %}
+      {% elif key == 'changed' %}
+      {% set color_one = lookup('vars','yellow_bg_black_fg') %}
+      {% set prefix = '   ' %}
+      {% set suffix = '   ' %}
+      {% set color_two = lookup('vars','yellow') %}
+      {% elif key == 'processed' %}
+      {% set color_one = lookup('vars','purple_bg_white_fg') %}
+      {% set prefix = '  ' %}
+      {% set suffix = '  ' %}
+      {% set color_two = lookup('vars','bright_purple') %}
+      {% elif key == 'skipped' %}
+      {% set color_one = lookup('vars','cyan_bg_black_fg') %}
+      {% set prefix = '   ' %}
+      {% set suffix = '   ' %}
+      {% set color_two = lookup('vars','cyan') %}
+      {% else %}
+      {% set color_one = "" %}
+      {% set prefix = "" %}
+      {% set suffix = "" %}
+      {% set color_two = "" %}
+      {% endif %}
+      {{ color_one }}{{ "%s%s%s" | format(prefix,key,suffix) }}{{ color_two }}: {{ ansible_callback_diy.stats[key] | to_nice_yaml }}
+      {% endif %}
+      {% endfor %}
+
+  tasks:
+  - name: Allow apache to modify files in /web
+    community.general.sefcontext:
+      target: '/web(/.*)?'
+      setype: httpd_sys_content_t
+      state: present
+
+  - name: Apply new SELinux file context to filesystem
+    ansible.builtin.command: restorecon -vvFR /web

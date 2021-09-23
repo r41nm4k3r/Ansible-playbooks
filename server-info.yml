@@ -1,0 +1,24 @@
+---
+- name: Retrieve remote server info
+  hosts: all
+  become: true
+  tasks:
+      - name: Execute the Uptime command over Command module
+        register: uptimeoutput
+        command: "uptime"
+      - debug:
+          var: uptimeoutput.stdout_lines
+      - name: Execute the UNAME command
+        register: unameout
+        command: "uname -a"
+      - debug:
+          var: unameout.stdout_lines
+      - name: Execute the df command
+        register: dfout
+        command: "df -h"
+      - debug:
+          var: dfout.stdout_lines
+      - name: Print all available facts
+        debug:
+          var: ansible_facts
+
