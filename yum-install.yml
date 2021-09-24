@@ -3,7 +3,7 @@
   become: yes
   tasks:
     - name: Ansible yum to install multiple packages
-      ansible.builtin.yum:
+      dnf:
         name:
           - samba
           - httpd
