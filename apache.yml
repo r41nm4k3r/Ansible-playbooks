@@ -14,8 +14,4 @@
        name: "apache"
        state: present
      when: ansible_facts['os_family'] == 'Archlinux'
-   - name: Print all available facts
-     debug:
-       var: ansible_facts
-
- 
+   
