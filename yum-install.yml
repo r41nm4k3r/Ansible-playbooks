@@ -1,5 +1,5 @@
 - name: Yum install rhel lab services needed
-  hosts: rhel
+  hosts: all
   become: yes
   tasks:
     - name: Ansible yum to install multiple packages
