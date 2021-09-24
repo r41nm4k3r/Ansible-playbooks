@@ -8,8 +8,8 @@
           - samba
           - httpd
           - mariadb-server
+          - nfs
         state: present
-
     - name: start multiple services in a loop
       service:
         name: "{{ item }}"
@@ -20,4 +20,4 @@
         - httpd
         - mariadb
         - smb
-  
+        - nfs
