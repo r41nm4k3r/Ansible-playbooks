@@ -9,7 +9,7 @@
       name:
       - httpd
       - mariadb
-      - smb
+      - samba
       - nfs-utils
       state: present
   - name: start multiple services in a loop
