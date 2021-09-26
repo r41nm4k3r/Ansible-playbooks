@@ -5,10 +5,7 @@
   tasks:
    - name: Ansible yum to install multiple packages
      dnf:
-       name:
-         - samba
-         - httpd
-         - mariadb-server
+       name: "{{ item }}"
        state: present
    - name: start multiple services in a loop
      service:
@@ -20,4 +17,4 @@
        - httpd
        - mariadb
        - smb
-       - nfs
+       - nfs-utils
