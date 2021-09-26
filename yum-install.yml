@@ -9,7 +9,6 @@
          - samba
          - httpd
          - mariadb-server
-         - nfs-utils
        state: present
    - name: start multiple services in a loop
      service:
