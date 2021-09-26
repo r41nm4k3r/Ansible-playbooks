@@ -1,10 +1,10 @@
 ---
-- name: Yum install rhel lab services needed
+- name: Dnf install rhel lab services needed
   hosts: all
   become: yes
   become_user: root
   tasks:
-  - name: Ansible yum to install multiple packages
+  - name: install multiple packages using dnf module
     dnf:
       name:
       - httpd
