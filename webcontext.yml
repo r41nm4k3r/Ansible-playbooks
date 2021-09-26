@@ -56,6 +56,5 @@
       target: '/web(/.*)?'
       setype: httpd_sys_content_t
       state: present
-
   - name: Apply new SELinux file context to filesystem
     ansible.builtin.command: restorecon -vvFR /web
