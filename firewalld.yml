@@ -14,8 +14,8 @@
     cyan_bg_black_fg: "\e[0m\e[48;5;87m\e[38;5;232m"
     magenta: "\e[38;5;198m"
     white: "\e[0m\e[38;5;255m"
-   #ansible_callback_diy_playbook_on_play_start_msg: "\n{{green}}DIY output(via play vars): play example: {{magenta}}{{ansible_callback_diy.play.name}}\n\n"
-   #ansible_callback_diy_playbook_on_task_start_msg: "DIY output(via play vars): task example: {{ ansible_callback_diy.task.name }}"
+  #ansible_callback_diy_playbook_on_play_start_msg: "\n{{green}}DIY output(via play vars): play example: {{magenta}}{{ansible_callback_diy.play.name}}\n\n"
+  #ansible_callback_diy_playbook_on_task_start_msg: "DIY output(via play vars): task example: {{ ansible_callback_diy.task.name }}"
     ansible_callback_diy_playbook_on_task_start_msg_color: cyan
     ansible_callback_diy_playbook_on_stats_msg: |+2
               RESULTS
@@ -51,7 +51,6 @@
       {{ color_one }}{{ "%s%s%s" | format(prefix,key,suffix) }}{{ color_two }}: {{ ansible_callback_diy.stats[key] | to_nice_yaml }}
       {% endif %}
       {% endfor %}
-
   tasks:
     - name: FirewallD rules
       firewalld:
