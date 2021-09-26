@@ -1,9 +1,9 @@
 ---
- - name: FirewallD
-   hosts: all
-   become: yes
-   become_user: root
-   tasks:
+- name: FirewallD
+  hosts: all
+  become: yes
+  become_user: root
+  tasks:
     - name: install firewalld
       dnf:
         name: firewalld

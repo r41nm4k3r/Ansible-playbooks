@@ -60,5 +60,5 @@
         service: "{{ item }}"
         state: enabled
       with_items:
-       - http
-       - https
+      - http
+      - https
