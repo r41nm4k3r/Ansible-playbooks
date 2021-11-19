@@ -1,6 +1,6 @@
 ---
 - name: Dnf install rhel lab services needed
-  hosts: all
+  hosts: rhel
   become: yes
   become_user: root
   tasks:
