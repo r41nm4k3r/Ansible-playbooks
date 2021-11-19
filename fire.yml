@@ -1,6 +1,6 @@
 ---
 - name: FirewallD
-  hosts: all
+  hosts: rhel
   become: yes
   become_user: root
   tasks:
