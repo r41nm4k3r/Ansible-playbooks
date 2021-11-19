@@ -1,6 +1,6 @@
 ---
 - name: cross platform installation of  apache
-  hosts: all
+  hosts: rhel
   gather_facts: true
   become: true
   tasks:
