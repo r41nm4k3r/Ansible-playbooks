@@ -1,6 +1,6 @@
 ---
 - name: Retrieve remote server info
-  hosts: all 
+  hosts: rhel 
   gather_facts: True 
   become: Yes
   tasks:
