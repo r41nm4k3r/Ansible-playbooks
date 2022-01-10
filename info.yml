@@ -1,6 +1,6 @@
 ---
 - name: Retrieve remote server info
-  hosts: rhel 
+  hosts: kalamata 
   gather_facts: True 
   become: Yes
   tasks:
