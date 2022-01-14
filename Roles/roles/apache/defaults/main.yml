@@ -1,0 +1,5 @@
+---
+# defaults file for apache
+apache_web_dir: /website
+apache_http_port: 80
+apache_admin: nny

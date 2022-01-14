@@ -1,0 +1,5 @@
+---
+- hosts: rhel
+  become: yes
+  roles:
+    - role: apache
