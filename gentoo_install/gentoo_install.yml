@@ -1,0 +1,273 @@
+---
+
+#
+# Create by Tyrone Yeh @ 20210402
+# The file URL https://git.io/JY10E
+#
+
+- name: Starting Gentoo Install
+  hosts: localhost
+  tasks:
+  - name: Prepare partitions
+    community.general.parted:
+      device: /dev/sda
+      number: 1
+      state: present
+      fs_type: ext4
+      flags: boot
+      part_end: "{{ lookup('env', 'root_partitionsize') }}"
+
+  - name: Swap partitions
+    community.general.parted:
+      device: /dev/sda
+      number: 2
+      state: present
+      fs_type: linux-swap
+      part_start: "{{ lookup('env', 'root_partitionsize') }}"
+
+  - name: Make filesystem
+    community.general.filesystem:
+      fstype: ext4
+      dev: /dev/sda1
+
+  - name: Make Swap
+    community.general.filesystem:
+      fstype: swap
+      dev: /dev/sda2
+
+  - name: Mount filesystem
+    ansible.posix.mount:
+      fstype: ext4
+      src: /dev/sda1
+      path: /mnt/gentoo
+      state: mounted
+
+  - name: Download latest stage3 info
+    get_url:
+      url: "{{ lookup('env', 'mirrorsite') }}/releases/amd64/autobuilds/latest-stage3-amd64-systemd.txt"
+      dest: /mnt/gentoo/
+      timeout: 600
+
+  - name: Read latest stage3 file remove comment
+    replace:
+      path: "/mnt/gentoo/latest-stage3-amd64-systemd.txt"
+      regexp: '^#.*\n|(.*) \d+\n'
+      replace: '\1'
+
+  - name: Set download stage3 url
+    set_fact:
+      stage3file: "{{ lookup('env', 'mirrorsite') }}/releases/amd64/autobuilds/{{ lookup('file', '/mnt/gentoo/latest-stage3-amd64-systemd.txt') }}"
+
+  - name: Read latest stage3 file for get stage3 filename
+    replace:
+      path: "/mnt/gentoo/latest-stage3-{{ lookup('env', 'systype') }}.txt"
+      regexp: '.*\/(.*)'
+      replace: '\1'
+
+  - name: Checking stage3 file exists
+    stat: path="/mnt/gentoo/{{ lookup('file', '/mnt/gentoo/latest-stage3-amd64-systemd.txt') }}"
+    register: stat_result
+
+  - name: Download latest stage3 file
+    get_url:
+      url: "{{ stage3file }}"
+      dest: /mnt/gentoo/
+      tmp_dest: /mnt/gentoo/
+    when: not stat_result.stat.exists
+
+  - name: Checking Stage3 unpacked
+    stat: path="/mnt/gentoo/root"
+    register: stage3
+
+  - name: Unpacking Stage3
+    unarchive:
+      src: "/mnt/gentoo/{{ lookup('file', '/mnt/gentoo/latest-stage3-amd64-systemd.txt') }}"
+      dest: /mnt/gentoo/
+    when: not stage3.stat.exists
+
+  - name: "Remove latest-stage3-amd64-systemd.txt"
+    file:
+      path: "/mnt/gentoo/latest-stage3-amd64-systemd.txt"
+      state: absent
+
+  - name: Mount dev
+    ansible.posix.mount:
+      path: /mnt/gentoo/dev
+      src: /dev
+      opts: rbind
+      state: mounted
+      fstype: none
+
+  - name: Mount proc
+    ansible.posix.mount:
+      path: /mnt/gentoo/proc
+      src: /proc
+      state: mounted
+      fstype: proc
+
+  - name: Copy resolve.conf
+    copy:
+      src: /etc/resolv.conf
+      dest: /mnt/gentoo/etc/
+
+  - name: Modify fstab for root
+    lineinfile:
+      path: /mnt/gentoo/etc/fstab
+      state: present
+      regexp: ^/dev/sda1
+      line: "/dev/sda1\t\t/\t\text4\t\tnoatime\t\t0 1"
+
+  - name: Modify fstab for swap
+    lineinfile:
+      path: /mnt/gentoo/etc/fstab
+      state: present
+      regexp: ^/dev/sda2
+      line: "/dev/sda2\t\tnone\t\tswap\t\tsw\t\t0 0"
+
+  - name: Modify hostname
+    lineinfile:
+      path: /mnt/gentoo/etc/conf.d/hostname
+      state: present
+      regexp: ^hostname=
+      line: 'hostname="{{ lookup("env", "servername") }}"'
+    tags: openrc
+
+  - name: Set timezone
+    copy:
+      src: /mnt/gentoo/usr/share/zoneinfo/{{ lookup('env', 'timezone') }}
+      dest: /mnt/gentoo/etc/localtime
+    tags: openrc
+
+  - name: Set eth0 using DHCP
+    lineinfile:
+      path: /mnt/gentoo/etc/net
+      state: present
+      regexp: ^config_eth0
+      line: config_eth0="dhcp"
+      create: yes
+    tags: openrc
+
+  - name: Modify make.conf MAKEOPTS
+    lineinfile:
+      path: /mnt/gentoo/etc/portage/make.conf
+      state: present
+      regexp: ^MAKEOPTS
+      line: "MAKEOPTS=-j{{ ansible_processor_cores + 1 }}"
+
+  - name: Modify make.conf USE
+    lineinfile:
+      path: /mnt/gentoo/etc/portage/make.conf
+      state: present
+      regexp: ^USE
+      line: USE="{{ lookup('env', 'useflag') }}"
+
+  - name: Modify make.conf GENTOO_MIRRORS
+    lineinfile:
+      path: /mnt/gentoo/etc/portage/make.conf
+      state: present
+      regexp: ^GENTOO_MIRRORS
+      line: GENTOO_MIRRORS="{{ lookup('env', 'mirrorsite') }} http://ftp.twaren.net/Gentoo/"
+
+  - name: Modify make.conf EMERGE_DEFAULT_OPTS
+    lineinfile:
+      path: /mnt/gentoo/etc/portage/make.conf
+      state: present
+      regexp: ^EMERGE_DEFAULT_OPTS
+      line: EMERGE_DEFAULT_OPTS="--jobs {{ lookup('env', 'installjobs') }} --autounmask-write"
+
+  - name: Modify make.conf PYTHON_TARGETS
+    lineinfile:
+      path: /mnt/gentoo/etc/portage/make.conf
+      state: present
+      regexp: ^PYTHON_TARGETS
+      line: PYTHON_TARGETS="{{ lookup('env', 'python_targets') }}"
+
+  - name: Modify make.conf VIDEO_CARDS
+    lineinfile:
+      path: /mnt/gentoo/etc/portage/make.conf
+      state: present
+      regexp: ^VIDEO_CARDS
+      line: VIDEO_CARDS="{{ lookup('env', 'video_cards') }}"
+
+  - name: Checking Portage command
+    stat: path=/mnt/gentoo/var/db/repos/gentoo
+    register: portage
+
+  - name: Get Portage
+    get_url:
+      url: "{{ lookup('env', 'mirrorsite') }}/snapshots/portage-latest.tar.xz"
+      dest: /mnt/gentoo/
+      tmp_dest: /mnt/gentoo/
+    when: not portage.stat.exists
+
+  - name: Unpacking Portage
+    unarchive:
+      src: /mnt/gentoo/portage-latest.tar.xz
+      dest: /mnt/gentoo/
+    when: not portage.stat.exists
+
+  - name: Move Portage
+    command: mv /mnt/gentoo/portage /mnt/gentoo/var/db/repos/gentoo
+    when: not portage.stat.exists
+
+  - name: Get kernel version from ISO
+    shell: uname -r
+    register: kernelver
+
+  - name: Copy kernel from ISO
+    copy:
+      src: /mnt/cdrom/boot/gentoo
+      dest: "/mnt/gentoo/boot/kernel-{{ kernelver.stdout }}"
+
+  - name: Copy initramfs from ISO
+    copy:
+      src: /mnt/cdrom/boot/gentoo.igz
+      dest: "/mnt/gentoo/boot/initramfs-{{ kernelver.stdout }}.img"
+
+  - name: Checking kernel modules
+    stat: path="/mnt/gentoo/lib/modules/{{ kernelver.stdout }}"
+    register: kernelmod
+
+  - name: Copy kernel modules from ISO
+    command: cp -ap "/lib/modules/{{ kernelver.stdout }}" /mnt/gentoo/lib/modules/
+    when: not kernelmod.stat.exists
+    async: 10
+    poll: 0
+
+  - name: Checking grub
+    stat: path=/mnt/gentoo/usr/sbin/grub-install
+    register: grub
+
+  - name: emerge grub sudo eix packages
+    command: chroot /mnt/gentoo bash -c 'emerge grub sudo eix'
+    when: not grub.stat.exists
+
+  - name: emerge networkmanager packages
+    command: chroot /mnt/gentoo bash -c 'emerge networkmanager'
+    when: not grub.stat.exists
+    tags: systemd
+
+  - name: Remove distfiles directory files
+    file:
+      path: /mnt/gentoo/var/cache/distfiles
+      state: absent
+
+  - name: Run grub install
+    command: chroot /mnt/gentoo bash -c 'grub-install /dev/sda'
+
+  - name: Modify default grub for eth0
+    lineinfile:
+      path: /mnt/gentoo/etc/default/grub
+      state: present
+      regexp: '^#GRUB_CMDLINE_LINUX='
+      line: GRUB_CMDLINE_LINUX="net.ifnames=0"
+
+  - name: Modify sudoers
+    lineinfile:
+      path: /mnt/gentoo/etc/sudoers
+      state: present
+      regexp: '^# %wheel ALL=\(ALL\) ALL'
+      line: '%wheel ALL=(ALL) ALL'
+
+  - name: Run grub mkconfig
+    command: chroot /mnt/gentoo bash -c 'grub-mkconfig -o /boot/grub/grub.cfg'
