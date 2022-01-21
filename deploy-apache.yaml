@@ -1,4 +1,5 @@
 ---
+# Deploy apache, add users and check if they already exist
 - hosts: rhel
   become: yes
   tasks:
