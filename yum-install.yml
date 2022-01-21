@@ -1,4 +1,5 @@
 ---
+# Simple installation in Rhel/Centos
 - name: Dnf install rhel lab services needed
   hosts: rhel
   become: yes

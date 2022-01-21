@@ -1,4 +1,5 @@
 ---
+# Retrieve basic server infos
 - name: Retrieve remote server info
   hosts: all
   become: true

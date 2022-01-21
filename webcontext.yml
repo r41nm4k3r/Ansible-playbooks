@@ -1,4 +1,5 @@
 ---
+# Fix SElinux context 
 - name: Change context on web directory
   hosts: rhel
   become: Yes

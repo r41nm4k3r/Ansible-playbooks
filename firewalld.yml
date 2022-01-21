@@ -1,4 +1,5 @@
 ---
+# Firewall service exceptions
 - name: FirewallD exceptions
   hosts: rhel
   gather_facts: True

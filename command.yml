@@ -1,4 +1,5 @@
 ---
+# Run shell commands using module shell module
 - name: List the contents of home directory
   hosts: all
   gather_facts: True
@@ -51,11 +52,9 @@
       {{ color_one }}{{ "%s%s%s" | format(prefix,key,suffix) }}{{ color_two }}: {{ ansible_callback_diy.stats[key] | to_nice_yaml }}
       {% endif %}
       {% endfor %}
-
   tasks:
    - name: List files and folder in home directory
      shell: 'ls -la'
      register: output
-
    - debug:
        var: "output.stdout_lines"

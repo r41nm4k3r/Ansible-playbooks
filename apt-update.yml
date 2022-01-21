@@ -1,5 +1,6 @@
-- name: Apt update rpi4 
-  hosts: rpi 
+---
+# Apt update & upgrade process
+- name: Apt update 
   become: yes
   tasks:
     - name: Updating system 
@@ -8,7 +9,6 @@
     - name: Upgrading system
       apt: upgrade=yes force_apt_get=yes
       register: output
-
     - debug:
         var: "output.stdout_lines"
 

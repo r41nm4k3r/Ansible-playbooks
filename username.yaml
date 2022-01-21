@@ -1,4 +1,5 @@
 ---
+# Simple user add depending on the hostname
 - hosts: rhel 
   tasks:
     - name: create users

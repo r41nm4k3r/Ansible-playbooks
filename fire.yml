@@ -1,4 +1,5 @@
 ---
+# Firewall installation and zone creation
 - name: FirewallD
   hosts: rhel
   become: yes
