@@ -1,0 +1,22 @@
+---
+- hosts: rhel 
+  tasks:
+    - name: create users
+      block:
+        - user:
+            name: "{{ item }}"
+            state: present
+            groups: wheel
+            loop:
+              - van
+              - dal
+          when: ansible_hostname == "servera"
+      rescue:
+        - debug: 
+            msg: "Username already exists"
+      always:
+        - debug:
+            msg: " Users created succefully! "
+        
+
+
