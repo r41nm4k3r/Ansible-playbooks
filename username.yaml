@@ -13,7 +13,7 @@
           when: ansible_hostname == "servera"
       rescue:
         - debug: 
-            msg: "Username already exists"
+            msg: "Username already exists! "
       always:
         - debug:
             msg: " Users created succefully! "
