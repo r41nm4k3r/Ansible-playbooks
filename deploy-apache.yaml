@@ -1,0 +1,31 @@
+---
+- hosts: rhel
+  become: yes
+  tasks:
+    - name: install apache
+      yum:
+        name: httpd
+        state: latest
+    - name: create user and add them to proper group
+      block:
+        - user:
+            name: "{{ item }}"
+            groups: apache
+            loop:
+              - van
+              - dal
+      rescue:
+        - debug: 
+            msg: "Username already exists! "
+    - name: create index.html
+      template:
+        src: /home/nny/Documents/index.j2
+        dest: /var/www/html/index.html
+        owner: apache
+        group: apache
+        mode: 0644
+    - name: start and enable service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
