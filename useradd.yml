@@ -53,7 +53,7 @@
       {% endif %}
       {% endfor %}
   tasks:
-    - name: add several users
+    - name: add several users and assign them different groups
       user:
         name: "{{ item.name }}"
         state: present
