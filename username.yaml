@@ -1,17 +1,18 @@
 ---
 # Simple user add depending on the hostname
-- hosts: rhel 
+- hosts: all  
   tasks:
     - name: create users
       block:
-        - user:
+        - name: Create multiple users
+          user:
             name: "{{ item }}"
             state: present
             groups: wheel
-            loop:
-              - van
-              - dal
-          when: ansible_hostname == "gentoo"
+          loop:
+            - van
+            - dal
+      when: ansible_hostname == "gentoo"
       rescue:
         - debug: 
             msg: "Username already exists! "
