@@ -13,9 +13,9 @@
             - haha
             - hahaha
       rescue:
-        - name: Inform if file doesn't exist
+        - name: Inform if file doesn't exist 
           debug: 
-            msg: " File does not exist! "
+            msg: " File does not exist on {{ ansible_hostname }} "
       when: ansible_hostname == 'gentoo'
         
 
