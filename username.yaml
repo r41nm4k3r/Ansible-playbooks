@@ -4,21 +4,15 @@
   tasks:
     - name: create users
       block:
-        - name: Create multiple users
-          user:
-            name: "{{ item }}"
+        - user:
+            name:  '{{ item }}'
             state: present
             groups: wheel
           loop:
             - van
             - dal
-      when: ansible_hostname == "gentoo"
-      rescue:
-        - debug: 
-            msg: "Username already exists! "
+      when: ansible_hostname == 'gentoo'
       always:
         - debug:
-            msg: " Users created succefully! "
-        
-
+            msg: " Users created successfully"
 

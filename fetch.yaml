@@ -1,0 +1,22 @@
+---
+# Fetch files from remote location
+- hosts: all  
+  tasks:
+    - name: Fetch multiple files 
+      block:
+        - name: Fetch multiple files from specific location
+          fetch:
+            src: /tmp/ "{{ item }}"
+            dest: /tmp
+          loop:
+            - ha
+            - haha
+            - hahaha
+      rescue:
+        - name: Inform if file doesn't exist
+          debug: 
+            msg: " File does not exist! "
+      when: ansible_hostname == 'gentoo'
+        
+
+
