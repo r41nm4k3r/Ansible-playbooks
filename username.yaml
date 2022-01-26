@@ -11,7 +11,7 @@
             loop:
               - van
               - dal
-          when: ansible_hostname == "servera"
+          when: ansible_hostname == "gentoo"
       rescue:
         - debug: 
             msg: "Username already exists! "
