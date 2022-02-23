@@ -7,8 +7,7 @@
       block:
         - user:
             name:  '{{ item }}'
-#            groups: wheel
-#            state: present
+            state: present
           loop:
             - testuser1
             - testuser2
