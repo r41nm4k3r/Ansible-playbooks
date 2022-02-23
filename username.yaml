@@ -1,13 +1,14 @@
 ---
 # Simple user add depending on the hostname
-- hosts: all  
+- hosts: all
+  gather_facts: true # not required. A toggle that controls if the fact modules are executed in parallel or serially and in order. This can guarantee the merge order of module facts at the expense of performance. By default it will be true if more than one fact module is used.
   tasks:
     - name: create users
       block:
         - user:
             name:  '{{ item }}'
             state: present
-            groups: wheel
+#            groups: wheel
           loop:
             - van
             - dal
