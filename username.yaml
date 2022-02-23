@@ -5,17 +5,17 @@
   tasks:
     - name: create users
       block:
-      - user:
-          name:  '{{ item }}'
-          groups: wheel
-          state: present
-        loop:
-          - testuser1
-          - testuser2
-        when: ansible_facts['os_family'] == "Debian"
+        - user:
+            name:  '{{ item }}'
+#            groups: wheel
+#            state: present
+          loop:
+            - testuser1
+            - testuser2
+          when: ansible_facts['os_family'] == "Debian"
       rescue:
         - debug:
-            msg: " Wrong OS distribution "
+            msg: "Error on {{ ansible_hostname }}"
       always:
         - debug:
             msg: "Playbook is finished!"
