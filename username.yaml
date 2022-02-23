@@ -1,19 +1,23 @@
 ---
 # Simple user add depending on the hostname
-- hosts: all
+- hosts: rhel
   gather_facts: true # not required. A toggle that controls if the fact modules are executed in parallel or serially and in order. This can guarantee the merge order of module facts at the expense of performance. By default it will be true if more than one fact module is used.
   tasks:
     - name: create users
       block:
-        - user:
-            name:  '{{ item }}'
-            state: present
-#            groups: wheel
-          loop:
-            - van
-            - dal
-      when: ansible_hostname == 'gentoo'
+      - user:
+          name:  '{{ item }}'
+          groups: wheel
+          state: present
+        loop:
+          - testuser1
+          - testuser2
+        when: ansible_facts['os_family'] == "Debian"
+      rescue:
+        - debug:
+            msg: " Wrong OS distribution "
       always:
         - debug:
-            msg: " Users created successfully"
-
+            msg: "Playbook is finished!"
+          
+      
