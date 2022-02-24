@@ -1,0 +1,34 @@
+---
+# Simple user add depending on the OS distribution
+- hosts: rhel
+  gather_facts: true
+  vars:
+    userlist:
+    - van
+    - dal
+  tasks:
+    - name: Create users
+      block:
+# Check if users already exist in the servers      
+        - getent:
+            database: passwd 
+            key: '{{ item }}'
+            fail_key: yes
+          loop: "{{ userlist }}"  
+# Create the users if they don't exist             
+      rescue:
+        - user:
+            name:  '{{ item }}'
+            state: present
+          loop: "{{ userlist }}"
+# OS condition            
+          when: ansible_facts['os_family'] == "RedHat"
+        - debug:
+            msg: "User {{ item }} created on {{ ansible_hostname }}"
+          loop: "{{ userlist }}"
+# Notify the end of playbook
+      always:
+        - debug:
+            msg: "Playbook is finished!"
+          
+      
