@@ -1,5 +1,5 @@
 ---
-# Simple user add depending on the OS distribution
+# Section 0: Simple user add depending on the OS distribution
 - hosts: rhel
   gather_facts: true
   vars:
@@ -9,16 +9,20 @@
   tasks:
     - name: Create users
       block:
-# Check if users already exist in the servers      
+# Section 1: Check if users already exist in the servers. If they are nto on the servers procced to section 2      
         - getent:
             database: passwd 
-            key: '{{ item }}'
+            key: "{{ item }}"
             fail_key: yes
-          loop: "{{ userlist }}"  
-# Create the users if they don't exist             
+          loop: "{{ userlist }}"
+# Notify that users already exist and continue directly to section 3
+        - debug:
+            msg: "User {{ item }} already exist on {{ ansible_hostname }}"
+          loop: "{{ userlist }}"
+# Section 2: Create the users in case of section 1 failure             
       rescue:
         - user:
-            name:  '{{ item }}'
+            name:  "{{ item }}"
             state: present
           loop: "{{ userlist }}"
 # OS condition            
@@ -26,7 +30,7 @@
         - debug:
             msg: "User {{ item }} created on {{ ansible_hostname }}"
           loop: "{{ userlist }}"
-# Notify the end of playbook
+# Section 3: Notify the end of playbook
       always:
         - debug:
             msg: "Playbook is finished!"
