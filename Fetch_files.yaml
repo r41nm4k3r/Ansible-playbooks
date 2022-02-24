@@ -1,0 +1,36 @@
+---
+# Section 0: Fetch files from remote location
+- hosts: all
+  gather_facts: yes
+  vars:
+    filelist:
+    - testfile0
+    - testfile1
+  tasks:
+# Section 1: Fetch multiple files from remote location
+    - name: Fetch multiple files 
+      block:
+        - name: Fetching multiple files from specific location
+          fetch:
+            src: /tmp/{{ item }}
+            dest: /tmp/
+            flat: yes  
+          loop: "{{ filelist }}"
+# Notify about what files are fetched
+        - debug:
+            msg: " Fetched {{ item }} from {{ ansible_hostname }} "
+          loop: "{{ filelist }}"
+# Notify in case of failure to fetch th requested files
+      rescue:
+        - name: Inform if file doesn't exist 
+          debug: 
+            msg: " File {{ item }} does not exist on {{ ansible_hostname }} "
+          loop: "{{ filelist }}"
+# Choose the host depending on the hostname
+      when: ansible_hostname == 'arch'
+# Notify the end of the plabook
+      always:
+        - name: Notify end of playbook
+          debug:
+            msg: " Playbook finished! "
+
