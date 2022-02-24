@@ -4,8 +4,8 @@
   gather_facts: true
   vars:
     userlist:
-    - van
-    - dal
+    - user1
+    - user2
   tasks:
     - name: Create users
       block:
