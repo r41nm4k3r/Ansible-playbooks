@@ -1,0 +1,15 @@
+---
+# Apt update & upgrade process
+- name: Apt update 
+  become: yes
+  tasks:
+    - name: Updating system 
+      ansible.builtin.apt:
+        update_cache=yes force_apt_get=yes
+    - name: Upgrading system
+      apt: upgrade=yes force_apt_get=yes
+      register: output
+    - debug:
+        var: "output.stdout_lines"
+
+
