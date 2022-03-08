@@ -3,7 +3,6 @@
 - name: Retrieve remote server info
   hosts: all 
   gather_facts: True 
-  become: Yes
   tasks:
       - name: Execute the Uptime command over Command module
         register: uptimeoutput
