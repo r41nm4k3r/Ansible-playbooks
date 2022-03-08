@@ -5,14 +5,13 @@
   gather_facts: true
   become: true
   tasks:
-   - name: apache on rpm
-     package:
-       name: "httpd"
-       state: present
-     when: ansible_facts['os_family'] == 'RedHat'
-   - name: apache on pacman
-     package:
-       name: "apache"
-       state: present
-     when: ansible_facts['os_family'] == 'Archlinux'
-   
+    - name: apache on rpm
+      package:
+        name: "httpd"
+        state: present
+      when: ansible_facts['os_family'] == 'RedHat'
+    - name: apache on pacman
+      package:
+        name: "apache"
+        state: present
+      when: ansible_facts['os_family'] == 'Archlinux'
