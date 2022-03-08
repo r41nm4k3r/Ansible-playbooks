@@ -1,15 +1,12 @@
 ---
-# Apt update & upgrade process
-- name: Apt update 
+# Copy file/directory between two remote hosts
+- name: Sync files/directories from servera to serverb
+  hosts: serverb # target host
   become: yes
+  become_user: root
   tasks:
-    - name: Updating system 
-      ansible.builtin.apt:
-        update_cache=yes force_apt_get=yes
-    - name: Upgrading system
-      apt: upgrade=yes force_apt_get=yes
-      register: output
-    - debug:
-        var: "output.stdout_lines"
-
-
+    - name: sync from servera to serverb
+      synchronize:
+        src: /tmp/file
+        dest: /tmp/
+      delegate_to: servera
