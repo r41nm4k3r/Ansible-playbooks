@@ -2,6 +2,7 @@
 # Apt update & upgrade process
 - name: Apt update 
   become: yes
+  become_user: root
   tasks:
     - name: Updating system 
       ansible.builtin.apt:
