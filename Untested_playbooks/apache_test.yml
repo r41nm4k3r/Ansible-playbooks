@@ -1,0 +1,57 @@
+---
+- name: Quick install and test smoke test apache 
+  gather_facts: yes
+  hosts: localhost
+  tasks:
+    - name: Installing apache on {{ ansible_distribution }}
+      apt:
+        name: apache2 
+        update_cache: yes 
+        state: latest
+      when: ansible_facts['os_family'] == 'Debian'
+    - name: start and enable service
+      service:
+        name: apache2 
+        state: started
+        enabled: yes
+      when: ansible_facts['os_family'] == 'Debian'
+    - name: Installing apache on {{ ansible_distribution }} 
+      dnf:
+        name: httpd   
+        state: latest
+      when: ansible_facts['os_family'] == 'RedHat'
+    - name: start and enable service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+      when: ansible_facts['os_family'] == 'RedHat'
+    - name: Installing apache on {{ ansible_distribution }}
+      pacman:
+        name: apache  
+        state: latest
+      when: ansible_facts['os_family'] == 'Archlinux'
+    - name: create index.html
+      lineinfile:
+        dest: /var/www/html/index.html
+        state: present
+        create: yes
+        line: '{{ item }}' 
+        owner: nny
+        group: nny
+        mode: 0644
+      loop:
+        - "<p>"
+        - "Apache is running"
+        - "</p>"
+        - "<p>"
+        - "on {{ ansible_distribution }} "
+        - "<p>"
+    - name: check for proper response  
+      uri:    
+        url: http://{{ansible_ssh_host}} 
+        return_content: yes  
+      register: result  
+      until: '"Apache is running" in result.content' 
+      retries: 5  
+      delay: 1
