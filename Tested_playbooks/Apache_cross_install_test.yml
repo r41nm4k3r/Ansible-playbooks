@@ -1,5 +1,5 @@
 ---
-- name: Quick install and test smoke test apache 
+- name: Quick install and test smoke apache 
   gather_facts: yes
   hosts: localhost
   become: yes
