@@ -40,8 +40,8 @@
         state: present
         create: yes
         line: '{{ item }}' 
-        owner: nny
-        group: nny
+        owner: apache
+        group: apache
         mode: 0644
       loop:
         - "<p>"
