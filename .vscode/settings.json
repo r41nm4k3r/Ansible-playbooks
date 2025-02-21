@@ -1,0 +1,8 @@
+{
+    "ansible.python.interpreterPath": "/usr/bin/python3",
+    "ansible.lightspeed.enabled": true,
+    "ansible.lightspeed.suggestions.enabled": true,
+    "ansible.executionEnvironment.enabled": true,
+    "notebook.defaultFormatter": "redhat.ansible",
+    "ansible.ansible.reuseTerminal": true
+}

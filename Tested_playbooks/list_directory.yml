@@ -2,8 +2,8 @@
 # Run shell commands using module shell module
 - name: List the contents of home directory
   hosts: all
-  gather_facts: True
-  become: Yes
+  gather_facts: true
+  become: false
   vars:
     green: "\e[0m\e[38;5;82m"
     yellow: "\e[0m\e[38;5;11m"
@@ -15,8 +15,8 @@
     cyan_bg_black_fg: "\e[0m\e[48;5;87m\e[38;5;232m"
     magenta: "\e[38;5;198m"
     white: "\e[0m\e[38;5;255m"
-   #ansible_callback_diy_playbook_on_play_start_msg: "\n{{green}}DIY output(via play vars): play example: {{magenta}}{{ansible_callback_diy.play.name}}\n\n"
-   #ansible_callback_diy_playbook_on_task_start_msg: "DIY output(via play vars): task example: {{ ansible_callback_diy.task.name }}"
+     #ansible_callback_diy_playbook_on_play_start_msg: "\n{{green}}DIY output(via play vars): play example: {{magenta}}{{ansible_callback_diy.play.name}}\n\n"
+     #ansible_callback_diy_playbook_on_task_start_msg: "DIY output(via play vars): task example: {{ ansible_callback_diy.task.name }}"
     ansible_callback_diy_playbook_on_task_start_msg_color: cyan
     ansible_callback_diy_playbook_on_stats_msg: |+2
               RESULTS
@@ -53,8 +53,8 @@
       {% endif %}
       {% endfor %}
   tasks:
-   - name: List files and folder in home directory
-     shell: 'ls -la'
-     register: output
-   - debug:
-       var: "output.stdout_lines"
+    - name: List files and folder in home directory
+      shell: 'ls -la'
+      register: output
+    - debug:
+          var: "output.stdout_lines"
