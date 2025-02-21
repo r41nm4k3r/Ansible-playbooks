@@ -1,6 +1,7 @@
 ---
 # Apt update & upgrade process
-- name: Apt update 
+- name: Apt update
+  hosts: "{{ hosts }}" 
   become: yes
   become_user: root
   tasks:
