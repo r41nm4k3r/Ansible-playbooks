@@ -1,0 +1,104 @@
+---
+- name: Install Docker, Portainer, and ZeroTier
+  hosts: "{{ hosts }}"
+  become: true
+  vars:
+    portainer_admin_password: "SecureP@ssw0rd"  # Change this
+    zerotier_network_id: "YOUR_NETWORK_ID"      # Replace with your actual ZeroTier network ID
+
+  tasks:
+    - name: "🚀 Detecting the Operating System..."
+      ansible.builtin.shell: |
+        source /etc/os-release && echo $ID
+      register: os_distribution
+      changed_when: false
+
+    - name: "🛠 Installing Required Dependencies..."
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - curl
+        - gnupg
+        - ca-certificates
+        - lsb-release
+      when: os_distribution.stdout in ["ubuntu", "debian", "centos", "rocky", "almalinux"]
+
+    - name: "🐳 Installing Docker using Official Script..."
+      ansible.builtin.shell: |
+        curl -fsSL https://get.docker.com | sh
+      args:
+        creates: /usr/bin/docker
+
+    - name: "✅ Docker Installation Completed!"
+      debug:
+        msg: "🎉 Docker has been successfully installed!"
+
+    - name: "🔄 Starting and Enabling Docker Service..."
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: "👤 Adding User {{ ansible_user }} to Docker Group..."
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    - name: "📥 Installing Docker Compose..."
+      get_url:
+        url: "https://github.com/docker/compose/releases/latest/download/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}"
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: "✅ Docker Compose Installation Completed!"
+      debug:
+        msg: "🎉 Docker Compose has been successfully installed!"
+
+    - name: "🚢 Deploying Portainer..."
+      docker_container:
+        name: portainer
+        image: portainer/portainer-ce
+        state: started
+        restart_policy: always
+        ports:
+          - "9443:9443"
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+          - "portainer_data:/data"
+        env:
+          ADMIN_PASSWORD: "{{ portainer_admin_password }}"
+        command: "-H unix:///var/run/docker.sock"
+
+    - name: "✅ Portainer Deployment Completed!"
+      debug:
+        msg: "🎉 Portainer is now running at http://your-server-ip:9000"
+
+    - name: "🌐 Installing ZeroTier..."
+      ansible.builtin.shell: |
+        curl -s https://install.zerotier.com | sudo bash
+      args:
+        creates: /usr/sbin/zerotier-cli
+
+    - name: "🔗 Joining ZeroTier Network..."
+      command: zerotier-cli join "{{ zerotier_network_id }}"
+      register: zerotier_join
+      changed_when: "'already a member' not in zerotier_join.stdout"
+
+    - name: "✅ Successfully Joined ZeroTier Network!"
+      debug:
+        msg: "🎉 Device is now connected to ZeroTier network {{ zerotier_network_id }}!"
+
+    - name: "🔎 Verifying ZeroTier Connection..."
+      command: zerotier-cli listnetworks
+      register: zerotier_status
+      changed_when: false
+
+    - name: "📡 ZeroTier Network Status"
+      debug:
+        var: zerotier_status.stdout_lines
+
+    - name: "🎉 Installation Completed Successfully!"
+      debug:
+        msg: "🚀 All services (Docker, Portainer, and ZeroTier) have been installed and configured successfully!"
