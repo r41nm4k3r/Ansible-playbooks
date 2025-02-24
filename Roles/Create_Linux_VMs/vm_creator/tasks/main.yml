@@ -1,0 +1,32 @@
+- name: Prompt for OS selection
+  ansible.builtin.pause:
+    prompt: "Enter the OS (debian, fedora, ubuntu, arch):"
+  register: user_os_input
+
+- name: Set OS variable
+  ansible.builtin.set_fact:
+    vm_os: "{{ user_os_input.user_input | lower }}"
+
+- name: Validate OS selection
+  ansible.builtin.fail:
+    msg: "Invalid OS '{{ vm_os }}'. Choose from: debian, fedora, ubuntu, arch."
+  when: vm_os not in os_variants.keys()
+
+# - name: Prompt for root password
+#   ansible.builtin.pause:
+#     prompt: "Enter root password:"
+#     echo: no
+#   register: user_root_password
+
+# - name: Set root password
+#   ansible.builtin.set_fact:
+#     root_password: "{{ user_root_password.user_input }}"
+
+- name: Download OS Image
+  include_tasks: download_image.yml
+
+- name: Create Cloud-Init Config
+  include_tasks: create_cloud_init.yml
+
+- name: Create VM
+  include_tasks: create_vm.yml

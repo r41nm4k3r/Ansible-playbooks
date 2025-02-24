@@ -1,0 +1,15 @@
+- name: Create and start VM
+  ansible.builtin.shell: |
+    virt-install --name={{ vm_name }} --ram={{ vm_memory }} --vcpus={{ vm_vcpus }} \
+      --disk path={{ image_directory }}/{{ vm_name }}.qcow2,format=qcow2,bus=virtio \
+      --disk path={{ cloud_init_iso }},device=cdrom \
+      --osinfo={{ os_variants[vm_os] }} \
+      --network bridge=virbr0,model=virtio \
+      --graphics none --console pty,target_type=serial \
+      --import --noautoconsole
+  register: vm_creation_result
+  ignore_errors: yes
+
+- name: Debug VM Creation Output
+  ansible.builtin.debug:
+    var: vm_creation_result

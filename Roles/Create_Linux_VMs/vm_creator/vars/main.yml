@@ -1,0 +1,11 @@
+os_variants:
+  ubuntu: "ubuntu22.04"
+  debian: "linux2022"
+  arch: "archlinux"
+  fedora: "fedora-unknown"
+
+vm_image_urls:
+  ubuntu: "https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img"
+  debian: "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2"
+  arch: "https://geo.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-cloudimg.qcow2"
+  fedora: "https://download.fedoraproject.org/pub/fedora/linux/releases/39/Cloud/x86_64/images/Fedora-Cloud-Base-39-1.5.x86_64.qcow2"

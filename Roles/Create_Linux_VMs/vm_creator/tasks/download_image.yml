@@ -1,0 +1,17 @@
+- name: Ensure image directory exists
+  ansible.builtin.file:
+    path: "{{ image_directory }}"
+    state: directory
+    mode: '0755'
+
+- name: Check if OS image exists
+  ansible.builtin.stat:
+    path: "{{ image_directory }}/{{ vm_name }}.qcow2"
+  register: image_stat
+
+- name: Download OS image if not present
+  ansible.builtin.get_url:
+    url: "{{ vm_image_urls[vm_os] }}"
+    dest: "{{ image_directory }}/{{ vm_name }}.qcow2"
+    mode: '0644'
+  when: not image_stat.stat.exists

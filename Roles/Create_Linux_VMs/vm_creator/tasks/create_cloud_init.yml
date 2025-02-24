@@ -1,0 +1,39 @@
+- name: Create cloud-init directory
+  ansible.builtin.file:
+    path: "/var/lib/libvirt/images/{{ vm_name }}/cloud-init"
+    state: directory
+    mode: '0755'
+
+- name: Generate meta-data file
+  ansible.builtin.template:
+    src: "meta-data.j2"
+    dest: "/var/lib/libvirt/images/{{ vm_name }}/cloud-init/meta-data"
+
+- name: Generate user-data file
+  ansible.builtin.template:
+    src: "user-data.j2"
+    dest: "/var/lib/libvirt/images/{{ vm_name }}/cloud-init/user-data"
+
+- name: Ensure cloud-init directory exists
+  ansible.builtin.file:
+    path: "{{ image_directory }}/{{ vm_name }}"
+    state: directory
+    mode: '0755'
+
+- name: Generate meta-data file
+  ansible.builtin.template:
+    src: "meta-data.j2"
+    dest: "{{ image_directory }}/{{ vm_name }}/meta-data"
+
+- name: Generate user-data file
+  ansible.builtin.template:
+    src: "user-data.j2"
+    dest: "{{ image_directory }}/{{ vm_name }}/user-data"
+
+- name: Generate cloud-init ISO
+  ansible.builtin.command:
+    cmd: >
+      genisoimage -output {{ cloud_init_iso }}
+      -volid CIDATA -joliet -rock
+      {{ image_directory }}/{{ vm_name }}/meta-data
+      {{ image_directory }}/{{ vm_name }}/user-data

@@ -1,0 +1,8 @@
+vm_name: my-vm
+vm_memory: 4096
+vm_vcpus: 4
+vm_disk_size: 10G
+image_directory: "/var/lib/libvirt/images"
+cloud_init_iso: "{{ image_directory }}/{{ vm_name }}/cloud-init.iso"
+vm_os: ""  # Will be prompted at runtime
+# root_password: ""  # Will be prompted at runtime
