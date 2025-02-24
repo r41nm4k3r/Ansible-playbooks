@@ -46,8 +46,7 @@ This Ansible role is designed to automate the creation of a Linux virtual machin
 ---
 - hosts: localhost
   become: yes
-  vars:
-    vm_name: "your-vm-name"
-    vm_os: "ubuntu"  # or "debian", "fedora", "arch"
   roles:
-    - create_vm
+    - vm_creator
+
+Or you can use the exmaple playbook.
