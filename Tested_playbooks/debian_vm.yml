@@ -1,0 +1,85 @@
+- name: "🚀 Create a Debian 12 VM with SSH & Root Password"
+  hosts: localhost
+  become: true
+  vars:
+    image_url: "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2" # Change with an image link of your choice
+    image_dest: "/var/lib/libvirt/images/debian-12.qcow2"
+    cloud_init_iso: "/var/lib/libvirt/images/debian-cloud-init.iso"
+    vm_name: "debian-lab"
+    ram: 2048
+    vcpus: 2
+    disk_size: 20G
+    network: "default"
+    os_variant: "linux2022"
+    root_password: "<REPLACE WITH YOUR PASSWORD>"  # Change this to a secure password
+    ssh_public_key: "<REPLACE WITH YOUR ACTUAL SSH KEY>"  # Replace with your actual SSH key
+
+  tasks:
+    - name: "🔍 Install required dependencies"
+      apt:
+        name:
+          - genisoimage
+          - qemu-utils
+          - libvirt-daemon-system
+          - virtinst
+          - bridge-utils
+          - cloud-utils
+        state: present
+        update_cache: yes
+
+    - name: "🌍 Download Debian 12 Cloud Image"
+      get_url:
+        url: "{{ image_url }}"
+        dest: "{{ image_dest }}"
+        mode: '0644'
+      register: download_status
+
+    - name: "📂 Resize the image to {{ disk_size }}"
+      command: "qemu-img resize {{ image_dest }} {{ disk_size }}"
+      when: download_status.changed
+
+    - name: "🔑 Generate hashed password for root"
+      command: "openssl passwd -6 {{ root_password }}"
+      register: hashed_password
+      changed_when: false
+
+    - name: "📝 Create Cloud-Init user-data file"
+      copy:
+        dest: "/tmp/user-data"
+        content: |
+          #cloud-config
+          users:
+            - name: root
+              ssh_authorized_keys:
+                - {{ ssh_public_key }}
+              lock_passwd: false
+              passwd: "{{ hashed_password.stdout }}"
+          chpasswd:
+            list: |
+              root:{{ root_password }}
+            expire: false
+          ssh_pwauth: true
+
+    - name: "📝 Create Cloud-Init meta-data file"
+      copy:
+        dest: "/tmp/meta-data"
+        content: |
+          instance-id: iid-local01
+          local-hostname: {{ vm_name }}
+
+    - name: "📀 Generate Cloud-Init ISO"
+      command: >
+        genisoimage -output {{ cloud_init_iso }}
+        -volid cidata -joliet -rock /tmp/meta-data /tmp/user-data
+
+    - name: "🚀 Create Debian 12 VM"
+      command: >
+        virt-install --name {{ vm_name }}
+        --ram {{ ram }} --vcpus {{ vcpus }}
+        --disk path={{ image_dest }},format=qcow2,bus=virtio
+        --disk path={{ cloud_init_iso }},device=cdrom
+        --os-variant {{ os_variant }}
+        --network network={{ network }}
+        --graphics none
+        --console pty,target_type=serial
+        --import
