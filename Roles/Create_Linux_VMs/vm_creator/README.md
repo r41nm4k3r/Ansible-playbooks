@@ -48,5 +48,5 @@ This Ansible role is designed to automate the creation of a Linux virtual machin
   become: yes
   roles:
     - vm_creator
-
+```
 Or you can use the exmaple playbook.
