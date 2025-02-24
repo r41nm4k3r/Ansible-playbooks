@@ -50,3 +50,9 @@ This Ansible role is designed to automate the creation of a Linux virtual machin
     - vm_creator
 ```
 Or you can use the exmaple playbook.
+
+3. **Run the playbook to create a new VM**:
+```bash
+ansible-playbook -K example-playbook.yml (from step 2)
+```
+
