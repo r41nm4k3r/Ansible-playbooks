@@ -55,4 +55,39 @@ Or you can use the exmaple playbook.
 ```bash
 ansible-playbook -K example-playbook.yml (from step 2)
 ```
+use -K run with sudo.
+
+4. **Post-VM Creation**:
+
+Find the VM's IP address:
+```bash
+virsh net-dhcp-leases default
+```
+
+SSH into the VM:
+```bash
+ssh root@<VM-IP>
+```
+Set the root password manually:
+```bash
+passwd
+```
+
+## Customization
+
+    Modify the user-data.j2 template to customize the cloud-init configuration to suit your environment.
+    
+    Modify the  defaults/main.yml to customize the vm ram,disk size,cpu etc.
+
+    Modify the  vars/main.yml to add/remove/change the linux distro image of vm you would like to create.
+
+License
+
+MIT License. See LICENSE for more details.
+
+This role utilizes virt-install and cloud-init to simplify VM creation and configuration on Linux-based systems.
+
+
+This **README.md** file is structured to provide clear documentation on the role, how to install it, configure it, and how to use it with different Linux distributions. 
+Let me know if you want any changes or additions! 🚀
 
