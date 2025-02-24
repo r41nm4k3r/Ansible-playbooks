@@ -40,3 +40,14 @@ This Ansible role is designed to automate the creation of a Linux virtual machin
 1. **Clone this repository** to your project:
    ```bash
    git clone <repository-url>
+
+2. **Add the role to your playbook**:
+```bash
+---
+- hosts: localhost
+  become: yes
+  vars:
+    vm_name: "your-vm-name"
+    vm_os: "ubuntu"  # or "debian", "fedora", "arch"
+  roles:
+    - create_vm
