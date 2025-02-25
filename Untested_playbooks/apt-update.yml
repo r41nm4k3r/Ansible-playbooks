@@ -1,7 +1,7 @@
 ---
 # Apt update & upgrade process
 - name: Apt update
-  hosts: Debian 
+  hosts: Webservers 
   become: true
   become_user: root
   become_method: sudo
