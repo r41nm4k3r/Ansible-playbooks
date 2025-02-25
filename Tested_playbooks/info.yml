@@ -1,6 +1,6 @@
 ---
 # Server info
-- name: Retrieve remote server info
+- name: Retrieve remote server info 💀
   hosts: all 
   gather_facts: True 
   tasks:
