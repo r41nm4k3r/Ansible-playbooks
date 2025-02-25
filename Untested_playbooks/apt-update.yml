@@ -4,7 +4,7 @@
   hosts: Webservers 
   become: true
   # become_user: root
-  # become_method: sudo
+  become_method: sudo
 
   tasks:
     - name: Updating system
