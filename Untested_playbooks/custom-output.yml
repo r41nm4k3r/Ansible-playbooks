@@ -1,6 +1,6 @@
 --- 
 - name: Override from play vars
-  hosts: rhel
+  hosts: localhost
   gather_facts: True 
   vars:
      ansible_connection: local
@@ -51,10 +51,6 @@
         {{ color_one }}{{ "%s%s%s" | format(prefix,key,suffix) }}{{ color_two }}: {{ ansible_callback_diy.stats[key] | to_nice_yaml }}
         {% endif %}
         {% endfor %}
-
----
-- hosts: all
-  gather_facts: no
   tasks:
     - shell: ps -eo pcpu,user,args | sort -r -k1 | head -n5
       register: ps
