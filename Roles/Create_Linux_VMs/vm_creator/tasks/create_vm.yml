@@ -1,7 +1,7 @@
 - name: Create and start VM
   ansible.builtin.shell: |
     virt-install --name={{ vm_name }} --ram={{ vm_memory }} --vcpus={{ vm_vcpus }} \
-      --disk path={{ image_directory }}/{{ vm_name }}.qcow2,format=qcow2,size=20 \
+      --disk path={{ image_directory }}/{{ vm_name }}.qcow2,format=qcow2,size={{ vm_disk_size }} \
       --disk path={{ cloud_init_iso }},device=cdrom \
       --osinfo={{ os_variants[vm_os] }} \
       --network bridge=virbr0,model=virtio \
