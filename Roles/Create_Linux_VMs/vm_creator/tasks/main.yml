@@ -12,15 +12,15 @@
     msg: "Invalid OS '{{ vm_os }}'. Choose from: debian, fedora, ubuntu, arch."
   when: vm_os not in os_variants.keys()
 
-# - name: Prompt for root password
-#   ansible.builtin.pause:
-#     prompt: "Enter root password:"
-#     echo: no
-#   register: user_root_password
+- name: Prompt for root ssh key
+  ansible.builtin.pause:
+    prompt: "Enter root ssh .pub key:"
+    echo: no
+  register: root_ssh_key
 
-# - name: Set root password
-#   ansible.builtin.set_fact:
-#     root_password: "{{ user_root_password.user_input }}"
+- name: Set root password
+  ansible.builtin.set_fact:
+    root_key: "{{ root_ssh_key.user_input }}"
 
 - name: Download OS Image
   include_tasks: download_image.yml
